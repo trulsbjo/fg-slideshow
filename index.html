@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;" />
+	<title>Fotogjengen ved Studentersamfundet i Trondhjem - Siste bilder</title>
+	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+</head>
+<body>
+    <div id="myslides">
+</div>
+
+<script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="js/jquery.cycle.lite.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    var images = [];
+    var animSpeed=1;
+    var $ss = $('#myslides');
+    var oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 9);
+    var url = 'http://foto.samfundet.no/api/v1/image/?format=jsonp&category=28&start_date='+oneWeekAgo.toISOString()+'&portrait=false&callback=?';
+
+    function callbackFunction(data) {
+        data.results.forEach(function(element) {
+            images.push(element);
+        });
+
+        if (images.length > 49 || ! data.next ) {
+            for (i = 0; i<10; i++) {
+                element = images[(Math.random()*images.length).toFixed(0)];
+                
+                $ss.append('<div class="bg" style="background: url(\'http://foto.samfundet.no/media/'+element.image_web+'\') no-repeat center center fixed;"> <div class="container"><h2>'+element.motive+'</h2><h3 style="margin-left: 200px;">'+element.date.substring(0,10)+' '+element.place.place+'<div style="float: right; width: 200px;">'+ element.credits +'</div></h3></div></div>')
+            }
+
+            if(window.location.hash.substr(1)>0)animSpeed+=parseInt(window.location.hash.substr(1));
+
+            $ss.cycle({
+                fit: 1, pause: 1, timeout: 5000, speed:animSpeed
+            });
+
+        } else if (data.next) {
+            callToFG(data.next, callbackFunction);
+        }
+    }
+    
+    function callToFG(url, callbackFunction) {
+        $.ajax({
+            async: false,
+            url: url,
+            dataType: 'JSONP',
+            jsonpCallback: 'callback',
+            type: 'GET',
+            success: callbackFunction
+        });
+    }
+
+    callToFG(url, callbackFunction);
+
+});
+</script>
+</body>
+</html>
+
+<!-- Made with inspiration from https://github.com/Videokomiteen/Samfslide -->
