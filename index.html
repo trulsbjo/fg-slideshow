@@ -18,14 +18,14 @@ $(document).ready(function(){
     var $ss = $('#myslides');
     var oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 9);
-    var url = 'http://foto.samfundet.no/api/v1/image/?format=jsonp&category=28&start_date='+oneWeekAgo.toISOString()+'&portrait=false&callback=?';
+    var url = 'http://foto.samfundet.no/api/v1/image/?format=jsonp&category=28&start_date='+oneWeekAgo.toISOString()+'&portrait=false&order_by=-date&callback=?';
 
     function callbackFunction(data) {
         data.results.forEach(function(element) {
             images.push(element);
         });
 
-        if (images.length > 49 || ! data.next ) {
+        if (images.length > 39 || ! data.next ) {
             for (i = 0; i<10; i++) {
                 element = images[(Math.random()*images.length).toFixed(0)];
                 
