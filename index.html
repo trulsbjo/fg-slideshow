@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html;" />
-	<title>Fotogjengen ved Studentersamfundet i Trondhjem - Siste bilder</title>
-	<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    <meta http-equiv="Content-Type" content="text/html;" />
+    <title>Fotogjengen ved Studentersamfundet i Trondhjem - Siste bilder</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
 </head>
 <body>
     <div id="myslides">
@@ -16,14 +16,22 @@ $(document).ready(function(){
     var images = [];
     var animSpeed=1;
     var $ss = $('#myslides');
-    var oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 9);
-    var url = 'http://foto.samfundet.no/api/v1/image/?format=jsonp&category=28&start_date='+oneWeekAgo.toISOString()+'&portrait=false&order_by=-date&callback=?';
+    var startDate = new Date();
+    startDate.setDate(startDate.getDate() - 9);
+    var base_url = 'http://foto.samfundet.no/api/v1/image/?format=jsonp&category=28&portrait=false&order_by=-date&callback=&start_date=';
+    var url = base_url + startDate.toISOString();
 
     function callbackFunction(data) {
         data.results.forEach(function(element) {
             images.push(element);
         });
+
+        // Too few images in chosen period, try with longer period.
+        if(images.length<10){
+            startDate.setDate(startDate.getDate() - 9);
+            url = base_url + startDate.toISOString();
+            return callToFG(url, callbackFunction);
+        }
 
         if (images.length > 49 || ! data.next ) {
             for (i = 0; i<10; i++) {
